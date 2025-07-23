@@ -1,0 +1,28 @@
+<Layouts.app {assigns}>
+  <.header>
+    <h1>Campaigns</h1>
+    <:actions>
+      <.button navigate={~p"/campaigns/new"} color="primary">
+        New Campaign
+      </.button>
+    </:actions>
+  </.header>
+
+  <div :if={@campaigns == []} class="p-8 text-center">
+    <.icon name="hero-face-frown" class="w-32 h-32 bg-gray-300" />
+    <br /> No campaigns data to display!
+  </div>
+
+  <.list :for={campaign <- @campaigns} class="base-bg-100 rounded-box shadow-md">
+    <:item>
+      <div class="list-col-grow">
+        <div>{campaign.name}</div>
+        <div class="text-xs">{campaign.description}</div>
+      </div>
+
+      <.button ghost link={~p"/campaigns/#{campaign.id}"} class="btn-sm">
+        <.icon name="hero-play-solid" class="size-4 opacity-75 hover:opacity-100" />
+      </.button>
+    </:item>
+  </.list>
+</Layouts.app>
