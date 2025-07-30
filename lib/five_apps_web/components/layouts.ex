@@ -54,17 +54,24 @@ defmodule FiveAppsWeb.Layouts do
           </li>
           <li></li>
         </ul>
-        <.dropdown>
-          <div tabindex="0" class="btn m-1">
-            <%= if @current_user != nil do %>
-              <span class="text-sm font-semibold">{@current_user.email}</span>
-            <% else %>
-              <span class="text-sm font-semibold">Sign In</span>
-            <% end %>
+        <.dropdown align="end">
+          <div tabindex="0" class="m-1">
+            <.avatar placeholder>
+              <div class="bg-neutral text-neutral-content w-8 rounded-full">
+                {friendly_user_letter(@current_user)}
+              </div>
+            </.avatar>
           </div>
-          <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-            <li><a>item 1</a></li>
-            <li><a>item 2</a></li>
+          <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] p-2 shadow">
+            <%= if @current_user != nil do %>
+              <li class="menu-title"><span class="text-sm font-bold">{@current_user.email}</span></li>
+              <li><a href={~p"/admin"}>Admin</a></li>
+              <li><a href={~p"/dev/mailbox"}>Mailbox</a></li>
+              <li><a href={~p"/sign-out"}>Sign Out</a></li>
+            <% else %>
+              <li><a href={~p"/sign-in"}>Sign In</a></li>
+              <li><a href={~p"/register"}>Sign Up</a></li>
+            <% end %>
           </ul>
         </.dropdown>
       </:navbar_end>
@@ -112,5 +119,14 @@ defmodule FiveAppsWeb.Layouts do
       </button>
     </div>
     """
+  end
+
+  def friendly_user_letter(nil), do: "?"
+
+  def friendly_user_letter(user) do
+    user.email
+    |> Ash.CiString.value()
+    |> String.capitalize()
+    |> String.first()
   end
 end

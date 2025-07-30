@@ -31,7 +31,7 @@ defmodule FiveAppsWeb.DaisyUIComponents.Button do
   attr :wide, :boolean, default: false
   attr :block, :boolean, default: false
   attr :shape, :string, values: ~w(circle square)
-  attr :rest, :global, include: ~w(form name value)
+  attr :rest, :global, include: ~w(form name value href navigate patch)
   slot :inner_block, required: true
 
   def button(assigns) do

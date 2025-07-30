@@ -7,6 +7,10 @@ defmodule FiveAppsWeb.Home.Index do
 
   def mount(_params, _session, socket) do
     # Initialize any data needed for the home page
-    {:ok, socket}
+    if socket.assigns.current_user != nil do
+      {:ok, redirect(socket, to: ~p"/campaigns")}
+    else
+      {:ok, socket}
+    end
   end
 end

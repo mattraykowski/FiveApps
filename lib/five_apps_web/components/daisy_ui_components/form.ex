@@ -182,7 +182,16 @@ defmodule FiveAppsWeb.DaisyUIComponents.Form do
       <.fieldset_label for={@id}>
         {@label}
       </.fieldset_label>
-      <.input id={@id} type="textarea" name={@name} color={@color} class={[@class, "w-full"]} prompt={@prompt} value={@value} {@rest} />
+      <.input
+        id={@id}
+        type="textarea"
+        name={@name}
+        color={@color}
+        class={[@class, "w-full"]}
+        prompt={@prompt}
+        value={@value}
+        {@rest}
+      />
       <.error :for={msg <- @errors}>{msg}</.error>
     </.fieldset>
     """
