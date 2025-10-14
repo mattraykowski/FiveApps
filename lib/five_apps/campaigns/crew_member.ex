@@ -15,10 +15,31 @@ defmodule FiveApps.Campaigns.CrewMember do
   end
 
   actions do
-    defaults [:read, :destroy]
+    defaults [:read]
 
     create :create do
-      accept [:name, :campaign_id]
+      accept [:name, :species, :campaign_id]
+    end
+
+    update :update do
+      accept [
+        :name,
+        :species,
+        :background,
+        :motivation,
+        :class,
+        :gear,
+        :notes,
+        :reactions,
+        :speed,
+        :combat,
+        :toughness,
+        :savvy
+      ]
+    end
+
+    destroy :destroy do
+      accept [:id]
     end
   end
 
@@ -32,6 +53,7 @@ defmodule FiveApps.Campaigns.CrewMember do
 
     attribute :species, :string do
       public? true
+      allow_nil? false
     end
 
     attribute :background, :string

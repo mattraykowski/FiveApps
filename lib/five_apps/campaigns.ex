@@ -25,7 +25,12 @@ defmodule FiveApps.Campaigns do
       define :delete_campaign, action: :destroy
     end
 
-    resource FiveApps.Campaigns.CrewMember
+    resource FiveApps.Campaigns.CrewMember do
+      define :create_crew_member, action: :create
+      define :update_crew_member, action: :update
+      define :delete_crew_member, action: :destroy
+    end
+
     resource FiveApps.Campaigns.Stash
     resource FiveApps.Campaigns.Ship
     resource FiveApps.Campaigns.Weapon
