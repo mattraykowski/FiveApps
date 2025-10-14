@@ -2,16 +2,39 @@
   <.header>
     <h1>Campaigns</h1>
     <:actions>
-      <.button navigate={~p"/campaigns/new"} color="primary">
+      <.button color="primary" phx-click={show_modal("create-campaign-modal")}>
         New Campaign
       </.button>
     </:actions>
   </.header>
 
+  <.modal id="create-campaign-modal">
+    <:modal_box class="w-11/12 max-w-5xl">
+      <.simple_form for={@form} phx-change="validate" phx-submit="save">
+        <.input field={@form[:name]} type="text" label="Name" required />
+        <.input field={@form[:description]} type="textarea" label="Description" />
+
+        <:actions>
+          <.modal_action>
+            <.button color="primary" type="submit" phx-disable-with="Creating...">
+              Create Campaign
+            </.button>
+          </.modal_action>
+        </:actions>
+      </.simple_form>
+    </:modal_box>
+  </.modal>
+
   <div :if={@campaigns == []} class="p-8 text-center">
     <.icon name="hero-face-frown" class="w-32 h-32 bg-gray-300" />
     <br /> No campaigns data to display!
   </div>
+
+  <%= if @campaigns != [] do %>
+    <div class="mb-4 text-sm text-gray-500">
+      Click on a campaign to view or edit its details.
+    </div>
+  <% end %>
 
   <.list :for={campaign <- @campaigns} class="base-bg-100 rounded-box shadow-md">
     <:item>
@@ -20,9 +43,33 @@
         <div class="text-xs">{campaign.description}</div>
       </div>
 
-      <.button ghost link={~p"/campaigns/#{campaign.id}"} class="btn-sm">
+      <a href={~p"/campaigns/#{campaign.id}"} class="btn-sm">
         <.icon name="hero-play-solid" class="size-4 opacity-75 hover:opacity-100" />
+      </a>
+      <.button ghost phx-click={show_modal("delete-campaign-modal-#{campaign.id}")} class="btn-sm">
+        <.icon name="hero-trash-solid" class="size-4 opacity-75 hover:opacity-100" />
       </.button>
+
+      <.modal id={"delete-campaign-modal-#{campaign.id}"}>
+        <:modal_box>
+          <h3 class="font-bold text-lg">Confirm Deletion</h3>
+          <p class="py-4">Are you sure you want to delete the campaign "{campaign.name}"?</p>
+
+          <.modal_action>
+            <.button phx-click={hide_modal("delete-campaign-modal-#{campaign.id}")}>
+              Cancel
+            </.button>
+            <.button
+              color="error"
+              phx-click="delete"
+              phx-value-id={campaign.id}
+              phx-disable-with="Deleting..."
+            >
+              Delete
+            </.button>
+          </.modal_action>
+        </:modal_box>
+      </.modal>
     </:item>
   </.list>
 </Layouts.app>

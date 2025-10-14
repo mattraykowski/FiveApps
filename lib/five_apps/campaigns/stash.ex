@@ -19,10 +19,12 @@ defmodule FiveApps.Campaigns.Stash do
 
     create :create do
       accept [:notes, :credits, :patrons, :rivals, :campaign_id]
+      primary? true
     end
 
     update :update do
       accept [:notes, :credits, :patrons, :rivals]
+      primary? true
     end
   end
 
@@ -42,6 +44,8 @@ defmodule FiveApps.Campaigns.Stash do
     attribute :rivals, :integer do
       default 0
     end
+
+    attribute :campaign_id, :uuid
 
     timestamps()
   end

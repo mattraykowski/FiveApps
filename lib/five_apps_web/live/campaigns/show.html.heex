@@ -1,0 +1,201 @@
+<Layouts.app {assigns}>
+  <.header>
+    <h1 class="text-lg font-bold">Campaign: <em>{@campaign.name}</em></h1>
+    <:actions></:actions>
+  </.header>
+
+  <.tabs class="tabs-border mt-4 mb-4" size="lg">
+    <.tab
+      type="link"
+      title="Campaign Details"
+      active={@active_tab == "general"}
+      phx-click="toggle_tab"
+      phx-value-tab="general"
+    />
+    <.tab
+      type="link"
+      title="Crew Members"
+      active={@active_tab == "crew"}
+      phx-click="toggle_tab"
+      phx-value-tab="crew"
+    />
+    <.tab
+      type="link"
+      title="Worlds"
+      active={@active_tab == "worlds"}
+      phx-click="toggle_tab"
+      phx-value-tab="worlds"
+    />
+    <.tab
+      type="link"
+      title="Turns"
+      active={@active_tab == "turns"}
+      phx-click="toggle_tab"
+      phx-value-tab="turns"
+    />
+  </.tabs>
+
+  <%= if @active_tab == "general" do %>
+    <.simple_form for={@form} phx-change="validate" phx-submit="save">
+      <.button color="primary" type="submit" phx-disable-with="Saving...">
+        Update Campaign
+      </.button>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-base-200 p-4 rounded-lg">
+          <h2 class="text-lg font-bold">Details</h2>
+          <.input field={@form[:name]} type="text" label="Name" required />
+
+          <div>
+            <div class="grid grid-cols-2 gap-2">
+              <.input
+                field={@form[:status]}
+                type="select"
+                label="Status"
+                options={["creating", "active", "abandoned"]}
+              />
+              <.input
+                field={@form[:difficulty]}
+                type="select"
+                label="Difficulty"
+                options={["easy", "normal", "challenging", "hardcore", "insanity"]}
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <.input field={@form[:turn_number]} type="number" label="Current Turn" />
+              <.input field={@form[:story_points]} type="number" label="Story Points" />
+            </div>
+            <.input field={@form[:victory]} type="text" label="Victory Condition" />
+          </div>
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          <h2 class="text-lg font-bold">Stash</h2>
+          <.inputs_for :let={stash_form} field={@form[:stash]}>
+            <div class="grid grid-cols-2 gap-2">
+              <.input field={stash_form[:notes]} type="textarea" label="Stash Notes" class="h-48" />
+              <div class="flex flex-col">
+                <.input field={stash_form[:credits]} type="number" label="Credits" />
+                <.input field={stash_form[:patrons]} type="number" label="Patrons" />
+                <.input field={stash_form[:rivals]} type="number" label="Rivals" />
+              </div>
+            </div>
+          </.inputs_for>
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          <h2 class="text-lg font-bold">Ship</h2>
+          <div>
+            <.inputs_for :let={ship_form} field={@form[:ship]}>
+              <div class="flex">
+                <div class="flex-auto">
+                  <.input field={ship_form[:name]} type="text" label="Ship Name" />
+                </div>
+                <.button
+                  color="secondary"
+                  type="button"
+                  phx-click="generate_ship_name"
+                  class="flex-none self-end ml-2 mb-1"
+                  aria-label="Generate Random Ship Name"
+                >
+                  <.icon name="hero-arrow-path-rounded-square" />
+                  <span class="sr-only">Generate Random Ship Name</span>
+                </.button>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2">
+                <.input field={ship_form[:hull]} type="number" label="Hull" size="small " />
+                <.input field={ship_form[:debt]} type="number" label="Debt" />
+                <.input field={ship_form[:event]} type="number" label="Event" />
+
+                <.input field={ship_form[:clock]} type="number" label="Clock" />
+                <.input field={ship_form[:rumors]} type="text" label="Rumors" />
+                <.input field={ship_form[:story_tracks]} type="text" label="Story Tracks" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <.input field={ship_form[:traits]} type="text" label="Traits" />
+                <.input field={ship_form[:upgrades]} type="text" label="Upgrades" />
+              </div>
+            </.inputs_for>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 w-auto mt-4">
+        <div class="bg-base-200 p-4 rounded-lg">
+          <.input field={@form[:description]} type="textarea" label="Description" />
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          <.input field={@form[:notes]} type="textarea" label="Notes" />
+        </div>
+      </div>
+    </.simple_form>
+  <% end %>
+  <%= if @active_tab == "crew" do %>
+    <div>
+      <h1 class="flex">
+        <span class="flex-auto">Crew Members</span>
+        <div>
+          <label class="label">
+            <.toggle
+              value="show-kia"
+              checked={@show_kia}
+              phx-click="toggle_crew_filter"
+              phx-value-crew="kia"
+            /> KIA
+          </label>
+          <label class="label">
+            <.toggle
+              value="show-sick-bay"
+              checked={@show_sick_bay}
+              phx-click="toggle_crew_filter"
+              phx-value-crew="sick-bay"
+            /> Sick Bay
+          </label>
+        </div>
+      </h1>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 1
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 2
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 3
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 4
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 5
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 6
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 7
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 8
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 9
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 10
+        </div>
+        <div class="bg-base-200 p-4 rounded-lg">
+          Crew Member 11
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <%= if @active_tab == "worlds" do %>
+    <div>
+      <h1>Worlds</h1>
+    </div>
+  <% end %>
+  <%= if @active_tab == "turns" do %>
+    <div>
+      <h1>Combat Turns</h1>
+    </div>
+  <% end %>
+</Layouts.app>

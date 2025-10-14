@@ -24,6 +24,7 @@ defmodule FiveApps.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import FiveApps.DataCase
+      import FiveApps.Generator
     end
   end
 
