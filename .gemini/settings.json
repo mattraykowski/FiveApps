@@ -1,19 +1,15 @@
 {
-  "servers": {
+  "mcpServers": {
     "tidewave": {
-      "type": "stdio",
       "command": "/opt/homebrew/bin/mcp-proxy",
       "args": ["http://localhost:4000/tidewave/mcp"]
     },
+    "ash_ai": {
+      "httpUrl": "http://localhost:4000/ash_ai/mcp"
+    },
     "context7": {
-      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
-    },
-    "ash_ai": {
-      "url": "http://localhost:4000/ash_ai/mcp",
-      "type": "http"
     }
-  },
-  "inputs": []
+  }
 }
