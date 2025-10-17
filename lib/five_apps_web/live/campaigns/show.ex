@@ -4,7 +4,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
   alias FiveApps.Campaigns
 
   def mount(%{"id" => id}, _session, socket) do
-    campaign = Campaigns.get_campaign!(id, load: [:ship, :stash, :crew_members])
+    campaign = Campaigns.get_campaign!(id, load: [:ship, :stash, crew_members: [:weapons]])
 
     form =
       Campaigns.form_to_update_campaign(campaign,
@@ -41,12 +41,16 @@ defmodule FiveAppsWeb.Campaigns.Show do
       |> assign(:show_crew_modal, false)
       |> assign(:show_edit_modal, false)
       |> assign(:show_delete_modal, false)
+      |> assign(:show_weapon_modal, false)
       |> assign(:crew_member_to_delete, nil)
       |> assign(:crew_member_to_edit, nil)
+      |> assign(:crew_member_for_weapon, nil)
+      |> assign(:weapon_to_edit, nil)
       |> assign(:campaign, campaign)
       |> assign(:form, to_form(form))
       |> assign(:crew_member_form, crew_member_form)
       |> assign(:edit_crew_member_form, nil)
+      |> assign(:weapon_form, nil)
 
     {:ok, socket}
   end
@@ -129,7 +133,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
     case AshPhoenix.Form.submit(socket.assigns.crew_member_form, params: form_data_with_campaign) do
       {:ok, _crew_member} ->
         # Reload the campaign with updated crew members
-        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, :crew_members])
+        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, crew_members: [:weapons]])
 
         {:noreply,
          socket
@@ -161,7 +165,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
     case Campaigns.delete_crew_member!(crew_member.id, actor: socket.assigns.current_user) do
       :ok ->
         # Reload the campaign with updated crew members
-        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, :crew_members])
+        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, crew_members: [:weapons]])
 
         {:noreply,
          socket
@@ -204,7 +208,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
     case AshPhoenix.Form.submit(socket.assigns.edit_crew_member_form, params: form_data) do
       {:ok, _crew_member} ->
         # Reload the campaign with updated crew members
-        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, :crew_members])
+        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, crew_members: [:weapons]])
 
         {:noreply,
          socket
@@ -219,6 +223,101 @@ defmodule FiveAppsWeb.Campaigns.Show do
          socket
          |> assign(:edit_crew_member_form, form)
          |> put_flash(:error, "Failed to update crew member")}
+    end
+  end
+
+  # Weapon Management Event Handlers
+
+  def handle_event("open_weapon_modal", %{"crew_member_id" => crew_member_id}, socket) do
+    crew_member = Enum.find(socket.assigns.campaign.crew_members, &(&1.id == crew_member_id))
+
+    weapon_form =
+      AshPhoenix.Form.for_create(FiveApps.Campaigns.Weapon, :create,
+        actor: socket.assigns.current_user
+      )
+      |> to_form()
+
+    {:noreply,
+     assign(socket,
+       show_weapon_modal: true,
+       crew_member_for_weapon: crew_member,
+       weapon_to_edit: nil,
+       weapon_form: weapon_form
+     )}
+  end
+
+  def handle_event("close_weapon_modal", _params, socket) do
+    {:noreply,
+     assign(socket,
+       show_weapon_modal: false,
+       crew_member_for_weapon: nil,
+       weapon_to_edit: nil,
+       weapon_form: nil
+     )}
+  end
+
+  def handle_event("validate_weapon", %{"form" => form_data}, socket) do
+    weapon_form = AshPhoenix.Form.validate(socket.assigns.weapon_form, form_data)
+    {:noreply, assign(socket, weapon_form: weapon_form)}
+  end
+
+  def handle_event("save_weapon", %{"form" => form_data}, socket) do
+    crew_member = socket.assigns.crew_member_for_weapon
+    form_data_with_crew_member = Map.put(form_data, "crew_member_id", crew_member.id)
+
+    case AshPhoenix.Form.submit(socket.assigns.weapon_form, params: form_data_with_crew_member) do
+      {:ok, _weapon} ->
+        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, crew_members: [:weapons]])
+
+        {:noreply,
+         socket
+         |> assign(:campaign, campaign)
+         |> assign(:show_weapon_modal, false)
+         |> assign(:crew_member_for_weapon, nil)
+         |> assign(:weapon_form, nil)
+         |> put_flash(:info, "Weapon added successfully")}
+
+      {:error, form} ->
+        {:noreply,
+         socket
+         |> assign(:weapon_form, form)
+         |> put_flash(:error, "Failed to add weapon")}
+    end
+  end
+
+  def handle_event("open_edit_weapon_modal", %{"weapon_id" => weapon_id, "crew_member_id" => crew_member_id}, socket) do
+    crew_member = Enum.find(socket.assigns.campaign.crew_members, &(&1.id == crew_member_id))
+    weapon = Enum.find(crew_member.weapons, &(&1.id == weapon_id))
+
+    weapon_form =
+      AshPhoenix.Form.for_update(weapon, :update,
+        actor: socket.assigns.current_user
+      )
+      |> to_form()
+
+    {:noreply,
+     assign(socket,
+       show_weapon_modal: true,
+       crew_member_for_weapon: crew_member,
+       weapon_to_edit: weapon,
+       weapon_form: weapon_form
+     )}
+  end
+
+  def handle_event("delete_weapon", %{"weapon_id" => weapon_id, "crew_member_id" => _crew_member_id}, socket) do
+    case Campaigns.delete_weapon(weapon_id, actor: socket.assigns.current_user) do
+      :ok ->
+        campaign = Campaigns.get_campaign!(socket.assigns.campaign.id, load: [:ship, :stash, crew_members: [:weapons]])
+
+        {:noreply,
+         socket
+         |> assign(:campaign, campaign)
+         |> put_flash(:info, "Weapon deleted successfully")}
+
+      {:error, _error} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to delete weapon")}
     end
   end
 end

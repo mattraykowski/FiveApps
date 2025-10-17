@@ -18,10 +18,12 @@ defmodule FiveApps.Campaigns.Weapon do
     defaults [:read, :destroy]
 
     create :create do
+      primary? true
       accept [:name, :range, :shot, :damage, :traits, :crew_member_id]
     end
 
     update :update do
+      primary? true
       accept [:name, :range, :shot, :damage, :traits]
     end
   end

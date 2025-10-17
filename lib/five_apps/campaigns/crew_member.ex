@@ -19,6 +19,9 @@ defmodule FiveApps.Campaigns.CrewMember do
 
     create :create do
       accept [:name, :species, :campaign_id]
+      argument :weapons, {:array, :map}, default: []
+
+      change manage_relationship(:weapons, type: :direct_control)
     end
 
     update :update do
@@ -34,12 +37,22 @@ defmodule FiveApps.Campaigns.CrewMember do
         :speed,
         :combat,
         :toughness,
-        :savvy
+        :savvy,
+        :luck,
+        :experience
       ]
+
+      argument :weapons, {:array, :map}, default: []
+
+      require_atomic? false
+
+      change manage_relationship(:weapons, type: :direct_control)
     end
 
     destroy :destroy do
       accept [:id]
+
+      change cascade_destroy(:weapons, action: :destroy, after_action?: false)
     end
   end
 
@@ -83,6 +96,16 @@ defmodule FiveApps.Campaigns.CrewMember do
     end
 
     attribute :savvy, :integer do
+      default 0
+      public? true
+    end
+
+    attribute :luck, :integer do
+      default 0
+      public? true
+    end
+
+    attribute :experience, :integer do
       default 0
       public? true
     end

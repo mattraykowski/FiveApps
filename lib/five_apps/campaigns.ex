@@ -33,6 +33,11 @@ defmodule FiveApps.Campaigns do
 
     resource FiveApps.Campaigns.Stash
     resource FiveApps.Campaigns.Ship
-    resource FiveApps.Campaigns.Weapon
+
+    resource FiveApps.Campaigns.Weapon do
+      define :create_weapon, action: :create
+      define :update_weapon, action: :update
+      define :delete_weapon, action: :destroy
+    end
   end
 end
