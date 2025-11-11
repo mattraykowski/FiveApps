@@ -1,19 +1,30 @@
 {
- "name": "Phoenix",
- "dockerComposeFile": "docker-compose.yml",
- "service": "app",
- "workspaceFolder": "/workspace",
+  "name": "Five Apps Dev Container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true,
+      "installZsh": true,
+      "installOhMyZsh": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
 
- "customizations": {
-  "vscode": {
-   "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
-   },
-   "extensions": [
-    "dbaeumer.vscode-eslint",
-    "jakebecker.elixir-ls",
-    "vue.volar"
-   ]
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": [
+        "JakeBecker.elixir-ls",
+        "pgourlain.erlang",
+        "humao.rest-client",
+        "anthropic.claude-code"
+      ]
+    }
   }
- }
 }

@@ -1,4 +1,4 @@
-defmodule FiveApps.Repo.Migrations.MigrateResources1 do
+defmodule FiveApps.Repo.Migrations.CheckWeapons do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -8,14 +8,14 @@ defmodule FiveApps.Repo.Migrations.MigrateResources1 do
   use Ecto.Migration
 
   def up do
-    alter table(:weapons) do
-      modify :range, :text, default: nil
+    alter table(:crew_members) do
+      modify :species, :text, null: false
     end
   end
 
   def down do
-    alter table(:weapons) do
-      modify :range, :text, default: "0"
+    alter table(:crew_members) do
+      modify :species, :text, null: true
     end
   end
 end

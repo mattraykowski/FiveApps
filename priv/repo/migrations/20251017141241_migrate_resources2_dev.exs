@@ -8,14 +8,14 @@ defmodule FiveApps.Repo.Migrations.MigrateResources2 do
   use Ecto.Migration
 
   def up do
-    alter table(:campaigns) do
-      add :description, :text
+    alter table(:crew_members) do
+      add :is_leader, :boolean, null: false, default: false
     end
   end
 
   def down do
-    alter table(:campaigns) do
-      remove :description
+    alter table(:crew_members) do
+      remove :is_leader
     end
   end
 end

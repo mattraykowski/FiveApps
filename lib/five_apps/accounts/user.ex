@@ -283,8 +283,12 @@ defmodule FiveApps.Accounts.User do
       authorize_if always()
     end
 
-    policy always() do
-      forbid_if always()
+    policy action([:register_with_password, :sign_in_with_password]) do
+      authorize_if always()
+    end
+
+    policy action(:read) do
+      authorize_if expr(id == ^actor(:id))
     end
   end
 

@@ -19,10 +19,12 @@ defmodule FiveApps.Campaigns.Ship do
 
     create :create do
       accept [:name, :campaign_id]
+      primary? true
     end
 
     update :update do
       accept [:name, :hull, :debt, :traits, :upgrades, :story_tracks, :event, :clock, :rumors]
+      primary? true
     end
   end
 
@@ -31,7 +33,7 @@ defmodule FiveApps.Campaigns.Ship do
 
     attribute :name, :string do
       public? true
-      allow_nil? false
+      allow_nil? true
     end
 
     attribute :hull, :integer do
@@ -61,6 +63,8 @@ defmodule FiveApps.Campaigns.Ship do
     attribute :rumors, :string do
       public? true
     end
+
+    attribute :campaign_id, :uuid
 
     timestamps()
   end
