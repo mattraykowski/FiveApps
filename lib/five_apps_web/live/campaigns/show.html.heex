@@ -170,14 +170,9 @@
                   <.badge color="primary">{crew_member.class || "No Class"}</.badge>
                 </div>
                 <div class="flex gap-2 items-center">
-                  <.toggle
-                    checked={crew_member.is_leader}
-                    phx-click="toggle_leader"
-                    phx-value-crew_member_id={crew_member.id}
-                    phx-value-is_leader={if crew_member.is_leader, do: "false", else: "true"}
-                    color="primary"
-                    aria-label="Set as crew leader"
-                  />
+                  <%= if crew_member.is_leader do %>
+                    <.badge color="warning">Leader</.badge>
+                  <% end %>
                   <.button
                     color="info"
                     size="sm"
@@ -417,6 +412,14 @@
           </div>
 
           <.input field={@edit_crew_member_form[:notes]} type="textarea" label="Notes" rows="3" />
+
+          <div class="grid grid-cols-2 gap-4">
+            <.input
+              field={@edit_crew_member_form[:is_leader]}
+              type="checkbox"
+              label="Crew Leader"
+            />
+          </div>
 
           <div class="flex gap-2 justify-end mt-4">
             <.button type="button" color="neutral" phx-click="close_edit_modal">

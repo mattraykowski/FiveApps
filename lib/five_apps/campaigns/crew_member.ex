@@ -43,17 +43,6 @@ defmodule FiveApps.Campaigns.CrewMember do
         :is_leader
       ]
 
-      argument :weapons, {:array, :map}, default: []
-
-      require_atomic? false
-
-      change FiveApps.Campaigns.Changes.EnsureSingleLeader
-      change manage_relationship(:weapons, type: :direct_control)
-    end
-
-    update :set_leader do
-      accept [:is_leader]
-
       require_atomic? false
 
       change FiveApps.Campaigns.Changes.EnsureSingleLeader

@@ -29,7 +29,6 @@ defmodule FiveApps.Campaigns do
       define :create_crew_member, action: :create
       define :get_crew_member, action: :read, get_by: [:id]
       define :update_crew_member, action: :update
-      define :set_crew_member_leader, action: :set_leader
       define :delete_crew_member, action: :destroy
     end
 

@@ -4,7 +4,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
   alias FiveApps.Campaigns
 
   def mount(%{"id" => id}, _session, socket) do
-    campaign = Campaigns.get_campaign!(id, load: [:ship, :stash, crew_members: [:weapons]])
+    campaign = fetch_campaign(id)
 
     form =
       Campaigns.form_to_update_campaign(campaign,
@@ -133,10 +133,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
     case AshPhoenix.Form.submit(socket.assigns.crew_member_form, params: form_data_with_campaign) do
       {:ok, _crew_member} ->
         # Reload the campaign with updated crew members
-        campaign =
-          Campaigns.get_campaign!(socket.assigns.campaign.id,
-            load: [:ship, :stash, crew_members: [:weapons]]
-          )
+        campaign = fetch_campaign(socket.assigns.campaign.id)
 
         {:noreply,
          socket
@@ -168,10 +165,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
     case Campaigns.delete_crew_member!(crew_member.id, actor: socket.assigns.current_user) do
       :ok ->
         # Reload the campaign with updated crew members
-        campaign =
-          Campaigns.get_campaign!(socket.assigns.campaign.id,
-            load: [:ship, :stash, crew_members: [:weapons]]
-          )
+        campaign = fetch_campaign(socket.assigns.campaign.id)
 
         {:noreply,
          socket
@@ -218,10 +212,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
     case AshPhoenix.Form.submit(socket.assigns.edit_crew_member_form, params: form_data) do
       {:ok, _crew_member} ->
         # Reload the campaign with updated crew members
-        campaign =
-          Campaigns.get_campaign!(socket.assigns.campaign.id,
-            load: [:ship, :stash, crew_members: [:weapons]]
-          )
+        campaign = fetch_campaign(socket.assigns.campaign.id)
 
         {:noreply,
          socket
@@ -280,10 +271,7 @@ defmodule FiveAppsWeb.Campaigns.Show do
 
     case AshPhoenix.Form.submit(socket.assigns.weapon_form, params: form_data_with_crew_member) do
       {:ok, _weapon} ->
-        campaign =
-          Campaigns.get_campaign!(socket.assigns.campaign.id,
-            load: [:ship, :stash, crew_members: [:weapons]]
-          )
+        campaign = fetch_campaign(socket.assigns.campaign.id)
 
         {:noreply,
          socket
@@ -346,34 +334,9 @@ defmodule FiveAppsWeb.Campaigns.Show do
     end
   end
 
-  # Leader Management Event Handler
-  def handle_event(
-        "toggle_leader",
-        %{"crew_member_id" => id, "is_leader" => is_leader_str} = params,
-        socket
-      ) do
-    is_leader = is_leader_str == "true"
-    crew_member = Enum.find(socket.assigns.campaign.crew_members, &(&1.id == id))
-
-    case Campaigns.set_crew_member_leader(
-           crew_member,
-           %{is_leader: is_leader},
-           actor: socket.assigns.current_user
-         ) do
-      {:ok, _updated} ->
-        # Reload campaign with updated crew
-        campaign =
-          Campaigns.get_campaign!(socket.assigns.campaign.id,
-            load: [:ship, :stash, crew_members: [:weapons]]
-          )
-
-        {:noreply,
-         socket
-         |> assign(:campaign, campaign)
-         |> put_flash(:info, "Leader updated")}
-
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Failed to update leader")}
-    end
+  defp fetch_campaign(id) do
+    Campaigns.get_campaign!(id,
+      load: [:ship, :stash, crew_members: [:weapons]]
+    )
   end
 end
