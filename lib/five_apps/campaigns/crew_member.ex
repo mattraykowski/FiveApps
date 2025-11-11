@@ -39,14 +39,24 @@ defmodule FiveApps.Campaigns.CrewMember do
         :toughness,
         :savvy,
         :luck,
-        :experience
+        :experience,
+        :is_leader
       ]
 
       argument :weapons, {:array, :map}, default: []
 
       require_atomic? false
 
+      change FiveApps.Campaigns.Changes.EnsureSingleLeader
       change manage_relationship(:weapons, type: :direct_control)
+    end
+
+    update :set_leader do
+      accept [:is_leader]
+
+      require_atomic? false
+
+      change FiveApps.Campaigns.Changes.EnsureSingleLeader
     end
 
     destroy :destroy do
@@ -107,6 +117,12 @@ defmodule FiveApps.Campaigns.CrewMember do
 
     attribute :experience, :integer do
       default 0
+      public? true
+    end
+
+    attribute :is_leader, :boolean do
+      default false
+      allow_nil? false
       public? true
     end
 

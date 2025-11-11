@@ -35,3 +35,7 @@ five_apps-*.tar
 npm-debug.log
 /assets/node_modules/
 
+*.env
+
+.claude/debug/
+.claude/ide/

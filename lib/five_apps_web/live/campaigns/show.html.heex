@@ -150,8 +150,7 @@
             /> Sick Bay
           </label>
           <.button color="primary" phx-click="open_crew_modal">
-            <.icon name="hero-plus" class="w-5 h-5" />
-            Add Crew Member
+            <.icon name="hero-plus" class="w-5 h-5" /> Add Crew Member
           </.button>
         </div>
       </div>
@@ -166,9 +165,19 @@
           <%= for crew_member <- @campaign.crew_members do %>
             <div class="bg-base-200 p-4 rounded-lg">
               <div class="flex justify-between items-start mb-2">
-                <h3 class="text-lg font-bold"><%= crew_member.name %></h3>
                 <div class="flex gap-2 items-center">
-                  <.badge color="primary"><%= crew_member.class || "No Class" %></.badge>
+                  <h3 class="text-lg font-bold">{crew_member.name}</h3>
+                  <.badge color="primary">{crew_member.class || "No Class"}</.badge>
+                </div>
+                <div class="flex gap-2 items-center">
+                  <.toggle
+                    checked={crew_member.is_leader}
+                    phx-click="toggle_leader"
+                    phx-value-crew_member_id={crew_member.id}
+                    phx-value-is_leader={if crew_member.is_leader, do: "false", else: "true"}
+                    color="primary"
+                    aria-label="Set as crew leader"
+                  />
                   <.button
                     color="info"
                     size="sm"
@@ -192,54 +201,54 @@
 
               <%= if crew_member.species do %>
                 <p class="text-sm text-base-content/70 mb-2">
-                  <span class="font-semibold">Species:</span> <%= crew_member.species %>
+                  <span class="font-semibold">Species:</span> {crew_member.species}
                 </p>
               <% end %>
 
               <div class="grid grid-cols-5 gap-2 my-3">
                 <div class="text-center">
                   <div class="text-xs text-base-content/70">Reactions</div>
-                  <div class="font-bold"><%= crew_member.reactions %></div>
+                  <div class="font-bold">{crew_member.reactions}</div>
                 </div>
                 <div class="text-center">
                   <div class="text-xs text-base-content/70">Speed</div>
-                  <div class="font-bold"><%= crew_member.speed %></div>
+                  <div class="font-bold">{crew_member.speed}</div>
                 </div>
                 <div class="text-center">
                   <div class="text-xs text-base-content/70">Combat</div>
-                  <div class="font-bold"><%= crew_member.combat %></div>
+                  <div class="font-bold">{crew_member.combat}</div>
                 </div>
                 <div class="text-center">
                   <div class="text-xs text-base-content/70">Toughness</div>
-                  <div class="font-bold"><%= crew_member.toughness %></div>
+                  <div class="font-bold">{crew_member.toughness}</div>
                 </div>
                 <div class="text-center">
                   <div class="text-xs text-base-content/70">Savvy</div>
-                  <div class="font-bold"><%= crew_member.savvy %></div>
+                  <div class="font-bold">{crew_member.savvy}</div>
                 </div>
               </div>
 
               <%= if crew_member.background do %>
                 <p class="text-sm mb-1">
-                  <span class="font-semibold">Background:</span> <%= crew_member.background %>
+                  <span class="font-semibold">Background:</span> {crew_member.background}
                 </p>
               <% end %>
 
               <%= if crew_member.motivation do %>
                 <p class="text-sm mb-1">
-                  <span class="font-semibold">Motivation:</span> <%= crew_member.motivation %>
+                  <span class="font-semibold">Motivation:</span> {crew_member.motivation}
                 </p>
               <% end %>
 
               <%= if crew_member.gear do %>
                 <p class="text-sm mb-1">
-                  <span class="font-semibold">Gear:</span> <%= crew_member.gear %>
+                  <span class="font-semibold">Gear:</span> {crew_member.gear}
                 </p>
               <% end %>
 
               <%= if crew_member.notes do %>
                 <div class="mt-2 pt-2 border-t border-base-300">
-                  <p class="text-sm text-base-content/70"><%= crew_member.notes %></p>
+                  <p class="text-sm text-base-content/70">{crew_member.notes}</p>
                 </div>
               <% end %>
 
@@ -254,8 +263,7 @@
                     phx-value-crew_member_id={crew_member.id}
                     aria-label="Add weapon"
                   >
-                    <.icon name="hero-plus" class="w-3 h-3" />
-                    Add Weapon
+                    <.icon name="hero-plus" class="w-3 h-3" /> Add Weapon
                   </.button>
                 </div>
 
@@ -277,11 +285,11 @@
                       <tbody>
                         <%= for weapon <- crew_member.weapons do %>
                           <tr>
-                            <td class="font-medium"><%= weapon.name %></td>
-                            <td><%= weapon.range || "-" %></td>
-                            <td><%= weapon.shot %></td>
-                            <td><%= weapon.damage %></td>
-                            <td><%= weapon.traits || "-" %></td>
+                            <td class="font-medium">{weapon.name}</td>
+                            <td>{weapon.range || "-"}</td>
+                            <td>{weapon.shot}</td>
+                            <td>{weapon.damage}</td>
+                            <td>{weapon.traits || "-"}</td>
                             <td class="text-right">
                               <div class="flex gap-1 justify-end">
                                 <.button
@@ -332,7 +340,12 @@
   <% end %>
 
   <%!-- Add Crew Member Modal --%>
-  <.modal :if={@show_crew_modal} id="crew-member-modal" show on_cancel={JS.push("close_crew_modal")}>
+  <.modal
+    :if={@show_crew_modal}
+    id="crew-member-modal"
+    show
+    on_cancel={JS.push("close_crew_modal")}
+  >
     <div class="p-6">
       <h2 class="text-2xl font-bold mb-4">Add Crew Member</h2>
       <.simple_form
@@ -356,7 +369,12 @@
   </.modal>
 
   <%!-- Edit Crew Member Modal --%>
-  <.modal :if={@show_edit_modal} id="edit-crew-member-modal" show on_cancel={JS.push("close_edit_modal")}>
+  <.modal
+    :if={@show_edit_modal}
+    id="edit-crew-member-modal"
+    show
+    on_cancel={JS.push("close_edit_modal")}
+  >
     <div class="p-6">
       <h2 class="text-2xl font-bold mb-4">Edit Crew Member</h2>
       <%= if @edit_crew_member_form do %>
@@ -430,8 +448,7 @@
 
       <%= if @crew_member_to_delete do %>
         <p class="text-base-content/80 mb-6">
-          Are you sure you want to delete
-          <span class="font-semibold"><%= @crew_member_to_delete.name %></span>? This action cannot be
+          Are you sure you want to delete <span class="font-semibold"><%= @crew_member_to_delete.name %></span>? This action cannot be
           undone.
         </p>
 
@@ -448,17 +465,27 @@
   </.modal>
 
   <%!-- Add/Edit Weapon Modal --%>
-  <.modal :if={@show_weapon_modal} id="weapon-modal" show on_cancel={JS.push("close_weapon_modal")}>
+  <.modal
+    :if={@show_weapon_modal}
+    id="weapon-modal"
+    show
+    on_cancel={JS.push("close_weapon_modal")}
+  >
     <div class="p-6">
       <h2 class="text-2xl font-bold mb-4">
-        <%= if @weapon_to_edit, do: "Edit Weapon", else: "Add Weapon" %>
+        {if @weapon_to_edit, do: "Edit Weapon", else: "Add Weapon"}
       </h2>
       <.simple_form for={@weapon_form} phx-change="validate_weapon" phx-submit="save_weapon">
         <.input field={@weapon_form[:name]} type="text" label="Name" required />
 
         <div class="grid grid-cols-2 gap-4">
           <.input field={@weapon_form[:range]} type="text" label="Range" placeholder='e.g., 12"' />
-          <.input field={@weapon_form[:traits]} type="text" label="Traits" placeholder="e.g., Energy, Precise" />
+          <.input
+            field={@weapon_form[:traits]}
+            type="text"
+            label="Traits"
+            placeholder="e.g., Energy, Precise"
+          />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
@@ -471,7 +498,7 @@
             Cancel
           </.button>
           <.button type="submit" color="primary" phx-disable-with="Saving...">
-            <%= if @weapon_to_edit, do: "Save Changes", else: "Add Weapon" %>
+            {if @weapon_to_edit, do: "Save Changes", else: "Add Weapon"}
           </.button>
         </div>
       </.simple_form>

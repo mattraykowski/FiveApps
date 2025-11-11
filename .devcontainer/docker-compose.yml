@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   app:
     build:
@@ -7,6 +7,8 @@ services:
       args:
         VARIANT: latest
         PHX_VERSION: 1.5.3
+    env_file:
+      - devcontainer.env
     volumes:
       - ..:/workspace:cached
       - vscode-extension:/root/.vscode-server-insiders
